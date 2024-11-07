@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Driver } from '../../types';  // On importe la fiche d'identité du chauffeur
-import { FaPhone, FaMapMarkerAlt } from 'react-icons/fa'; // Icones pour améliorer l'affichage
+import { Driver } from '../../types';
+import { FaPhone, FaMapMarkerAlt, FaEdit } from 'react-icons/fa';
+import ModalEdit from '../modal/modalEdit';
 
 interface BodyProps {
   drivers: Driver[];
@@ -18,6 +19,8 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
   });
 
   const [confirmationMessage, setConfirmationMessage] = useState<string | null>(null);
+  const [openModal, setOpenModal] = useState(false); // Etat pour ouvrir/fermer le modal
+  const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null); // Chauffeur sélectionné pour modification
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -30,7 +33,12 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // On peut ajouter le chauffeur
+    // Validation des champs
+    if (!formData.nom || !formData.prenom || !formData.email || !formData.telephone || !formData.vehicule) {
+      setConfirmationMessage('Tous les champs sont requis.');
+      return;
+    }
+
     try {
       const response = await fetch('http://localhost:3000/api/driver', {
         method: 'POST',
@@ -49,7 +57,7 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
 
       setConfirmationMessage('Chauffeur ajouté avec succès !');
 
-      // Réinitialise le formulaire
+      // Réinitialisation du formulaire
       setTimeout(() => {
         setFormData({
           nom: '',
@@ -75,11 +83,10 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
       .then(data => {
         if (data.message === 'Chauffeur supprimé') {
           console.log('Chauffeur supprimé avec succès:', driverId);
-          
+
           // Mise à jour de la liste des chauffeurs après suppression
           setDrivers(prevDrivers => prevDrivers.filter(driver => driver._id !== driverId));
 
-          // Optionnel : message de confirmation
           setConfirmationMessage('Chauffeur supprimé avec succès!');
         } else {
           console.error('Erreur lors de la suppression:', data);
@@ -92,57 +99,48 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
       });
   };
 
+  const openEditModal = (driver: Driver) => {
+    setSelectedDriver(driver); // On sélectionne le chauffeur à modifier
+    setOpenModal(true); // On ouvre le modal
+  };
+
   return (
     <div className="flex flex-col items-center mt-10 px-4 md:px-8">
-      <h1 className="text-black text-3xl font-bold mb-6">Carte et liste des Chauffeurs</h1>
+      <h1 className="text-black text-2xl sm:text-3xl font-bold mb-6">Carte et liste des Chauffeurs</h1>
 
-     {/* Afficher la liste des chauffeurs */}
-      <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg">
+      <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-lg">
         <ul>
-          {drivers && drivers.length === 0 ? (
+          {drivers.length === 0 ? (
             <p className="text-gray-600">Chargement des chauffeurs...</p>
           ) : (
-            drivers.length > 0 ? (
-              drivers.map((driver) => (
-                <li 
-                  className="flex justify-between items-center mb-4 p-4 border-b border-gray-300 rounded-lg hover:bg-gray-100 transition-all"
-                  key={driver._id}
-                >
-                  <div className="flex flex-col">
-                    <h3 className="text-xl font-semibold">{driver.nom} {driver.prenom}</h3>
-                    <p className="text-gray-500 flex items-center">
-                      <FaPhone className="mr-2 text-blue-600" />
-                      {driver.telephone}
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    {/* Statut de disponibilité */}
-                    <span 
-                      className={`px-3 py-1 text-sm rounded-full ${driver.disponibilite ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}
-                    >
-                      {driver.disponibilite ? 'Disponible' : 'Indisponible'}
-                    </span>
-
-                    {/* Bouton de suppression */}
-                    <button 
-                      className="text-red-600 ml-4"
-                      onClick={() => handleDelete(driver._id)}
-                    >
-                      Supprimer
-                    </button>
-                  </div>
-                </li>
-              ))
-            ) : (
-              <p className="text-gray-600">Aucun chauffeur trouvé.</p>
-            )
+            drivers.map((driver) => (
+              <li className="flex flex-col sm:flex-row justify-between items-center mb-4 p-4 border-b border-gray-300 rounded-lg hover:bg-gray-100 transition-all" key={driver._id}>
+                <div className="flex flex-col sm:flex-row sm:items-center">
+                  <h3 className="text-xl font-semibold">{driver.nom} {driver.prenom}</h3>
+                  <p className="text-gray-500 flex items-center mt-2 sm:mt-0 sm:ml-4">
+                    <FaPhone className="mr-2 text-blue-600" />
+                    {driver.telephone}
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center space-x-4 mt-4 sm:mt-0">
+                  <span className={`px-3 py-1 text-xs md:text-sm rounded-full ${driver.disponibilite ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                    {driver.disponibilite ? 'Disponible' : 'Indisponible'}
+                  </span>
+                  <button className="text-yellow-600 ml-4 text-xs md:text-base" onClick={() => openEditModal(driver)}>
+                    <FaEdit />
+                  </button>
+                  <button className="text-red-600 ml-4 text-xs md:text-base" onClick={() => handleDelete(driver._id)}>
+                    Supprimer
+                  </button>
+                </div>
+              </li>
+            ))
           )}
         </ul>
       </div>
 
-
-      {/* Google Map */}
-      <div className="mt-6 w-full max-w-4xl bg-blue-800 p-6 rounded-lg shadow-lg text-white mb-5">
+      {/* Google Maps */}
+      <div className="mt-6 w-full max-w-2xl bg-blue-800 p-6 rounded-lg shadow-lg text-white mb-5">
         <div className="flex items-center mb-4">
           <FaMapMarkerAlt className="mr-3 text-2xl" />
           <h2 className="text-xl font-semibold">Google Maps</h2>
@@ -152,107 +150,58 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
 
       {/* Message de confirmation */}
       {confirmationMessage && (
-        <div className="mt-4 w-full max-w-4xl bg-green-500 p-4 rounded-lg text-white text-center">
+        <div className="mt-4 w-full max-w-2xl bg-green-500 p-4 rounded-lg text-white text-center">
           <p>{confirmationMessage}</p>
         </div>
       )}
 
       {/* Formulaire d'ajout des chauffeurs */}
-      <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg">
+      <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-lg mb-4">
         <h2 className="text-2xl font-semibold mb-4">Ajouter un chauffeur</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="nom" className="block text-lg font-medium text-gray-700">Nom</label>
-            <input
-              type="text"
-              id="nom"
-              name="nom"
-              value={formData.nom}
-              onChange={handleInputChange}
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Nom"
-            />
+            <input type="text" id="nom" name="nom" value={formData.nom} onChange={handleInputChange} className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nom" />
           </div>
-
           <div>
             <label htmlFor="prenom" className="block text-lg font-medium text-gray-700">Prénom</label>
-            <input
-              type="text"
-              id="prenom"
-              name="prenom"
-              value={formData.prenom}
-              onChange={handleInputChange}
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Prénom"
-            />
+            <input type="text" id="prenom" name="prenom" value={formData.prenom} onChange={handleInputChange} className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Prénom" />
           </div>
-
           <div>
             <label htmlFor="email" className="block text-lg font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Email"
-            />
+            <input type="email" id="email" name="email" value={formData.email} onChange={handleInputChange} className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Email" />
           </div>
-
           <div>
             <label htmlFor="telephone" className="block text-lg font-medium text-gray-700">Téléphone</label>
-            <input
-              type="tel"
-              id="telephone"
-              name="telephone"
-              value={formData.telephone}
-              onChange={handleInputChange}
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Téléphone"
-            />
+            <input type="tel" id="telephone" name="telephone" value={formData.telephone} onChange={handleInputChange} className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Téléphone" />
           </div>
-
           <div>
             <label htmlFor="vehicule" className="block text-lg font-medium text-gray-700">Véhicule</label>
-            <input
-              type="text"
-              id="vehicule"
-              name="vehicule"
-              value={formData.vehicule}
-              onChange={handleInputChange}
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Véhicule"
-            />
+            <input type="text" id="vehicule" name="vehicule" value={formData.vehicule} onChange={handleInputChange} className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Véhicule" />
           </div>
-
           <div>
             <label htmlFor="disponibilite" className="block text-lg font-medium text-gray-700">Disponibilité</label>
-            <select
-              id="disponibilite"
-              name="disponibilite"
-              value={formData.disponibilite ? 'true' : 'false'}
-              onChange={(e) => setFormData({
-                ...formData,
-                disponibilite: e.target.value === 'true'
-              })}
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
+            <select id="disponibilite" name="disponibilite" value={formData.disponibilite ? 'true' : 'false'} onChange={(e) => setFormData({ ...formData, disponibilite: e.target.value === 'true' })} className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option value="true">Disponible</option>
               <option value="false">Indisponible</option>
             </select>
           </div>
-
-          <div>
-            <button type="submit" className="w-full p-3 mt-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
-              Ajouter Chauffeur
-            </button>
-          </div>
+          <button type="submit" className="w-full p-3 mt-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+            Ajouter le chauffeur
+          </button>
         </form>
       </div>
+
+      {/* Modal de modification */}
+      {openModal && selectedDriver && (
+        <ModalEdit
+          driver={selectedDriver}
+          setOpenModal={setOpenModal}
+          setDrivers={setDrivers}
+        />
+      )}
     </div>
   );
 };
 
 export default Body;
-
