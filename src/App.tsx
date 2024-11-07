@@ -31,7 +31,7 @@ function App() {
 
         {/* Définition des Routes */}
         <Routes>
-          <Route path="/" element={<Body drivers={drivers} />} />
+        <Route path="/" element={<Body drivers={drivers} setDrivers={setDrivers} />} />
           <Route path="/mentionslegales" element={<LegalMentions />} />
         </Routes>
 
