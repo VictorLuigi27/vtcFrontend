@@ -1,17 +1,26 @@
-import { BrowserRouter as Router, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/header/header';
 import Footer from './components/footer/footer';
 import Body from './components/Body/body';
 import { useState, useEffect } from 'react';
-import { Driver } from './types';
+import { Driver,  DriversResponse} from './types';
+import LegalMentions from './components/mentions/mentions';
 
 function App() {
-  const [drivers, setDrivers] = useState<Driver[]>([]);  // Utilisation du type Driver pour l'état
+  const [drivers, setDrivers] = useState<Driver[]>([]);
 
   useEffect(() => {
     fetch('http://localhost:3000/api/driver')
-      .then(response => response.json())
-      .then((data: Driver[]) => setDrivers(data))  
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erreur de récupération des chauffeurs');
+        }
+        return response.json();
+      })
+      .then((data: DriversResponse) => {
+        console.log('Chauffeurs récupérés:', data);
+        setDrivers(data.drivers);
+      })
       .catch(error => console.error('Erreur:', error));
   }, []);
 
@@ -20,12 +29,13 @@ function App() {
       <div className="flex flex-col min-h-screen">
         <Header />
 
-        <Body drivers={drivers} />
-
+        {/* Définition des Routes */}
         <Routes>
-          {/* Routes ici pour plus tard */}
+          <Route path="/" element={<Body drivers={drivers} />} />
+          <Route path="/mentionslegales" element={<LegalMentions />} />
         </Routes>
 
+        {/* Le Footer reste toujours visible */}
         <Footer />
       </div>
     </Router>

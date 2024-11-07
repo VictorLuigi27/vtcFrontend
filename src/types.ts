@@ -10,3 +10,9 @@ export interface Driver {
     disponibilite: boolean;
   }
   
+  export interface DriversResponse {
+    drivers: Driver[];       
+    total: number;           
+    totalPages: number;      
+    currentPage: number;     
+  }
