@@ -20,7 +20,7 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
 
   // Ajout des fausses coordonnées pour chaque chauffeur
   const driversWithCoordinates = drivers.map((driver, index) => {
-    const randomCoordinate = fakeCoordinates[index % fakeCoordinates.length]; // Cycle à travers les fausses coordonnées
+    const randomCoordinate = fakeCoordinates[index % fakeCoordinates.length]; 
     return {
       ...driver,
       coordinates: randomCoordinate
@@ -156,7 +156,7 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
         </ul>
       </div>
 
-      {/* Google Maps Section */}
+      {/* Google Maps */}
       <div className="mt-6 bg-blue-800 p-6 rounded-lg shadow-lg text-white mb-5">
         <div className="flex items-center mb-4">
           <FaMapMarkerAlt className="mr-3 text-2xl" />
@@ -165,7 +165,7 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
         <p>Localisation des chauffeurs sur la carte...</p>
       </div>
 
-      {/* Affichage de la carte */}
+      {/* La carte */}
       <MapComponent drivers={driversWithCoordinates} />
       
       {/* Message de confirmation */}

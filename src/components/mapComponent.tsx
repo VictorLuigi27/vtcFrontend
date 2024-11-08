@@ -12,33 +12,29 @@ const MapComponent: React.FC<MapComponentProps> = ({ drivers }) => {
   useEffect(() => {
     const initializeMap = async () => {
       try {
-        // Charge l'API Google Maps
         const google = await googleMapsLoader();
 
-        // Initialisation de la carte
         const map = new google.maps.Map(mapRef.current!, {
-          center: { lat: 48.8566, lng: 2.3522 }, // Coordonnées de Paris
+          center: { lat: 48.8566, lng: 2.3522 },
           zoom: 10,
         });
 
-        // Ajout des marqueurs pour les chauffeurs
         drivers.forEach((driver) => {
           if (driver.latitude && driver.longitude) {
-            // Personnalisation de l'icône du marqueur
-            const markerIcon = {
-              url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png', // Exemple : icône de marqueur personnalisé (tu peux changer ça)
-              scaledSize: new google.maps.Size(32, 32), // Taille du marqueur
-            };
+            // Créer un élément HTML personnalisé pour le marqueur
+            const markerElement = document.createElement('div');
+            markerElement.style.width = '32px';
+            markerElement.style.height = '32px';
+            markerElement.style.backgroundImage = 'url(https://maps.google.com/mapfiles/ms/icons/blue-dot.png)';
+            markerElement.style.backgroundSize = 'cover';
+            markerElement.style.borderRadius = '50%';
 
-            // Création du marqueur avec AdvancedMarkerElement
             const marker = new google.maps.marker.AdvancedMarkerElement({
               position: { lat: driver.latitude, lng: driver.longitude },
               map,
-              title: `${driver.nom} ${driver.prenom}`,
-              icon: markerIcon, 
+              content: markerElement, // Utiliser l'élément HTML comme contenu
             });
 
-            // Ajout d'une infobulle (InfoWindow) pour afficher des infos sur le chauffeur
             const infoWindow = new google.maps.InfoWindow({
               content: `
                 <div>
@@ -50,14 +46,13 @@ const MapComponent: React.FC<MapComponentProps> = ({ drivers }) => {
               `,
             });
 
-           
             marker.addListener('click', () => {
               infoWindow.open(map, marker);
             });
           }
         });
       } catch (error) {
-        console.error("Erreur lors du chargement de la carte Google Maps :", error);
+        console.error('Erreur lors du chargement de la carte Google Maps :', error);
       }
     };
 
