@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Driver } from '../../types';
 import { FaPhone, FaMapMarkerAlt, FaEdit } from 'react-icons/fa';
 import ModalEdit from '../modal/modalEdit';
+import MapComponent from '../mapComponent';
 
 interface BodyProps {
   drivers: Driver[];
@@ -9,6 +10,23 @@ interface BodyProps {
 }
 
 const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
+  const fakeCoordinates = [
+    { lat: 48.8566, lng: 2.3522 }, // Paris centre
+    { lat: 48.8666, lng: 2.3332 }, // Nord de Pari
+    { lat: 48.8433, lng: 2.3377 }, // Sud de Paris
+    { lat: 48.8700, lng: 2.3400 }, // Est de Paris
+    { lat: 48.661072, lng: 2.2688259 }  // La ville du bois
+  ];
+
+  // Ajout des fausses coordonnées pour chaque chauffeur
+  const driversWithCoordinates = drivers.map((driver, index) => {
+    const randomCoordinate = fakeCoordinates[index % fakeCoordinates.length]; // Cycle à travers les fausses coordonnées
+    return {
+      ...driver,
+      coordinates: randomCoordinate
+    };
+  });
+
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
@@ -19,9 +37,8 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
   });
 
   const [confirmationMessage, setConfirmationMessage] = useState<string | null>(null);
-  const [openModal, setOpenModal] = useState(false); // Etat pour ouvrir/fermer le modal
-  const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null); // Chauffeur sélectionné pour modification
-
+  const [openModal, setOpenModal] = useState(false); 
+  const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null); 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -84,7 +101,7 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
         if (data.message === 'Chauffeur supprimé') {
           console.log('Chauffeur supprimé avec succès:', driverId);
 
-          // Mise à jour de la liste des chauffeurs après suppression
+          // Mise à jour de la liste des chauffeurs
           setDrivers(prevDrivers => prevDrivers.filter(driver => driver._id !== driverId));
 
           setConfirmationMessage('Chauffeur supprimé avec succès!');
@@ -139,8 +156,8 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
         </ul>
       </div>
 
-      {/* Google Maps */}
-      <div className="mt-6 w-full max-w-2xl bg-blue-800 p-6 rounded-lg shadow-lg text-white mb-5">
+      {/* Google Maps Section */}
+      <div className="mt-6 bg-blue-800 p-6 rounded-lg shadow-lg text-white mb-5">
         <div className="flex items-center mb-4">
           <FaMapMarkerAlt className="mr-3 text-2xl" />
           <h2 className="text-xl font-semibold">Google Maps</h2>
@@ -148,6 +165,9 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
         <p>Localisation des chauffeurs sur la carte...</p>
       </div>
 
+      {/* Affichage de la carte */}
+      <MapComponent drivers={driversWithCoordinates} />
+      
       {/* Message de confirmation */}
       {confirmationMessage && (
         <div className="mt-4 w-full max-w-2xl bg-green-500 p-4 rounded-lg text-white text-center">
@@ -156,7 +176,7 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
       )}
 
       {/* Formulaire d'ajout des chauffeurs */}
-      <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-lg mb-4">
+      <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-lg mb-4 mt-6">
         <h2 className="text-2xl font-semibold mb-4">Ajouter un chauffeur</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -181,18 +201,16 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
           </div>
           <div>
             <label htmlFor="disponibilite" className="block text-lg font-medium text-gray-700">Disponibilité</label>
-            <select id="disponibilite" name="disponibilite" value={formData.disponibilite ? 'true' : 'false'} onChange={(e) => setFormData({ ...formData, disponibilite: e.target.value === 'true' })} className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select name="disponibilite" id="disponibilite" value={formData.disponibilite.toString()} onChange={handleInputChange} className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option value="true">Disponible</option>
               <option value="false">Indisponible</option>
             </select>
           </div>
-          <button type="submit" className="w-full p-3 mt-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
-            Ajouter le chauffeur
-          </button>
+          <button type="submit" className="w-full p-3 bg-blue-600 text-white font-semibold rounded-lg mt-4 hover:bg-blue-700">Ajouter</button>
         </form>
       </div>
 
-      {/* Modal de modification */}
+      {/* Modal pour modification */}
       {openModal && selectedDriver && (
         <ModalEdit
           driver={selectedDriver}
@@ -205,3 +223,4 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
 };
 
 export default Body;
+

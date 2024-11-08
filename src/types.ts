@@ -8,6 +8,8 @@ export interface Driver {
     telephone: string;
     vehicule: string;
     disponibilite: boolean;
+    latitude: number; 
+    longitude: number; 
   }
   
   export interface DriversResponse {
