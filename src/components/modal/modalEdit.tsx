@@ -15,13 +15,18 @@ const ModalEdit: React.FC<ModalEditProps> = ({ driver, setOpenModal, setDrivers 
     setFormData(driver);
   }, [driver]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const formatPhoneNumber = (input: string) => {
+    // Mettre des epaces tous les 2 chiffres
+    return input.replace(/\s/g, '').replace(/(\d{2})(?=\d)/g, '$1 ');
+};
+
+const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev: Driver) => ({
-      ...prev,
-      [name]: value
+    setFormData(prev => ({
+        ...prev,
+        [name]: name === 'telephone' ? formatPhoneNumber(value) : value
     }));
-  };
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -101,4 +101,3 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
 };
 
 export default Body;
-
