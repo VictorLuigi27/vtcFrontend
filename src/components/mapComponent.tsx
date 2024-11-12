@@ -20,8 +20,9 @@ const MapComponent: React.FC<{ drivers: Driver[] }> = ({ drivers }) => {
     const loadGoogleMaps = async () => {
       const google = await googleMapsLoader(); // Charger l'API Google Maps
       const map = new google.maps.Map(mapRef.current!, {
-        center: { lat: 48.8566, lng: 2.3522 },
+        center: { lat: 48.8499198, lng: 2.6370411 },
         zoom: 12,
+        mapId: '874020db26c1c05a', 
       });
 
       const geocodeAddress = async (adresse: string) => {
@@ -35,7 +36,7 @@ const MapComponent: React.FC<{ drivers: Driver[] }> = ({ drivers }) => {
             } else {
               console.error(`Erreur de géocodage pour l'adresse : ${adresse} (Statut : ${status})`);
               reject(`Erreur de géocodage pour ${adresse}`);
-            }
+            } 
           });
         });
       };
@@ -46,14 +47,20 @@ const MapComponent: React.FC<{ drivers: Driver[] }> = ({ drivers }) => {
             const position = await geocodeAddress(driver.adresse);
             if (!position) return;
 
-            const marker = new google.maps.Marker({
+            // Utilisation de l'AdvancedMarkerElement avec une image personnalisée
+            const marker = new google.maps.marker.AdvancedMarkerElement({
               position: position,
               map: map,
-              icon: {
-                url: 'https://www.svgrepo.com/svg/283135/maps-and-flags-pin',
-                size: new google.maps.Size(60, 60),
-                scaledSize: new google.maps.Size(60, 60),
-              },
+              content: (() => {
+                const div = document.createElement('div');
+                div.style.width = '60px';
+                div.style.height = '60px';
+                div.style.backgroundImage = "url('/marker-maps.svg')";
+                div.style.backgroundSize = 'contain';
+                div.style.backgroundPosition = 'center';
+                div.style.backgroundRepeat = 'no-repeat';
+                return div;
+              })(),
             });
 
             const infoWindow = new google.maps.InfoWindow({
