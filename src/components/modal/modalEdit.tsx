@@ -109,6 +109,17 @@ const ModalEdit: React.FC<ModalEditProps> = ({ driver, setOpenModal, setDrivers 
             />
           </div>
           <div>
+            <label htmlFor="adresse" className="block text-lg font-medium text-gray-700">Adresse</label>
+            <input
+              type="text"
+              id="adresse"
+              name="adresse"
+              value={formData.adresse}
+              onChange={handleInputChange}
+              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
             <label htmlFor="vehicule" className="block text-lg font-medium text-gray-700">Véhicule</label>
             <input
               type="text"

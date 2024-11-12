@@ -17,9 +17,9 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
     prenom: '',
     email: '',
     telephone: '',
-    adresse: '',
     vehicule: '',
     disponibilite: false,
+    adresse: '',
   });
 
   const [confirmationMessage, setConfirmationMessage] = useState<string | null>(null);
@@ -53,7 +53,7 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
       console.log('Chauffeur ajouté:', addedDriver);
 
       setConfirmationMessage('Chauffeur ajouté avec succès !');
-      setFormData({ nom: '', prenom: '', email: '', telephone: '', adresse: '', vehicule: '', disponibilite: false });
+      setFormData({ nom: '', prenom: '', email: '', telephone: '', vehicule: '', disponibilite: false, adresse: ''});
       setTimeout(() => setConfirmationMessage(null), 3000);
     } catch (error) {
       console.error('Erreur:', error);
