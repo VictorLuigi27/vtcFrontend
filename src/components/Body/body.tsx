@@ -98,38 +98,41 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
       </div>
 
       {/* Section Chauffeurs Disponibles */}
-      {activeTab === 'drivers' && (
-        <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-lg">
-          <ul>
-            {drivers.length === 0 ? (
-              <p className="text-gray-600">Chargement des chauffeurs...</p>
-            ) : (
-              drivers.map((driver) => (
-                <li key={driver._id} className="flex flex-col sm:flex-row justify-between items-center mb-4 p-4 border-b border-gray-300 rounded-lg hover:bg-gray-100 transition-all">
-                  <div className="flex flex-col sm:flex-row sm:items-center">
-                    <h3 className="text-xl font-semibold">{driver.nom} {driver.prenom}</h3>
-                    <p className="text-gray-500 flex items-center mt-2 sm:mt-0 sm:ml-4">
-                      <FaPhone className="mr-2 text-blue-600" />
-                      {driver.telephone}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap items-center space-x-4 mt-4 sm:mt-0">
-                    <span className={`px-3 py-1 text-xs md:text-sm rounded-full ${driver.disponibilite ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
-                      {driver.disponibilite ? 'Disponible' : 'Indisponible'}
-                    </span>
-                    <button className="text-yellow-600 ml-4 text-xs md:text-base" onClick={() => openEditModal(driver)}>
-                      <FaEdit />
-                    </button>
-                    <button className="text-red-600 ml-4 text-xs md:text-base" onClick={() => handleDelete(driver._id)}>
-                      Supprimer
-                    </button>
-                  </div>
-                </li>
-              ))
-            )}
-          </ul>
-        </div>
-      )}
+        {activeTab === 'drivers' && (
+          <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-lg mb-6">
+            <ul>
+              {drivers.length === 0 ? (
+                <p className="text-gray-600">Chargement des chauffeurs...</p>
+              ) : (
+                drivers
+                  .sort((a, b) => (b.disponibilite ? 1 : 0) - (a.disponibilite ? 1 : 0)) // Tri par disponibilité
+                  .map((driver) => (
+                    <li key={driver._id} className="flex flex-col sm:flex-row justify-between items-center mb-4 p-4 border-b border-gray-300 rounded-lg hover:bg-gray-100 transition-all">
+                      <div className="flex flex-col sm:flex-row sm:items-center">
+                        <h3 className="text-xl font-semibold">{driver.nom} {driver.prenom}</h3>
+                        <p className="text-gray-500 flex items-center mt-2 sm:mt-0 sm:ml-4">
+                          <FaPhone className="mr-2 text-blue-600" />
+                          {driver.telephone}
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap items-center space-x-4 mt-4 sm:mt-0">
+                        <span className={`px-3 py-1 text-xs md:text-sm rounded-full ${driver.disponibilite ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                          {driver.disponibilite ? 'Disponible' : 'Indisponible'}
+                        </span>
+                        <button className="text-yellow-600 ml-4 text-xs md:text-base" onClick={() => openEditModal(driver)}>
+                          <FaEdit />
+                        </button>
+                        <button className="text-red-600 ml-4 text-xs md:text-base" onClick={() => handleDelete(driver._id)}>
+                          Supprimer
+                        </button>
+                      </div>
+                    </li>
+                  ))
+              )}
+            </ul>
+          </div>
+        )}
+
 
      {/* Section Carte */}
       {activeTab === 'map' && (

@@ -20,9 +20,9 @@ const MapComponent: React.FC<{ drivers: Driver[] }> = ({ drivers }) => {
     const loadGoogleMaps = async () => {
       const google = await googleMapsLoader(); // Charger l'API Google Maps
       const map = new google.maps.Map(mapRef.current!, {
-        center: { lat: 48.8499198, lng: 2.6370411 },
+        center: { lat: 48.866667, lng: 2.333333 },
         zoom: 12,
-        mapId: '874020db26c1c05a', 
+        mapId: '874020db26c1c05a',
       });
 
       const geocodeAddress = async (adresse: string) => {
@@ -36,7 +36,7 @@ const MapComponent: React.FC<{ drivers: Driver[] }> = ({ drivers }) => {
             } else {
               console.error(`Erreur de géocodage pour l'adresse : ${adresse} (Statut : ${status})`);
               reject(`Erreur de géocodage pour ${adresse}`);
-            } 
+            }
           });
         });
       };
@@ -53,7 +53,7 @@ const MapComponent: React.FC<{ drivers: Driver[] }> = ({ drivers }) => {
               map: map,
               content: (() => {
                 const div = document.createElement('div');
-                div.style.width = '60px';
+                div.style.width = '30px';
                 div.style.height = '60px';
                 div.style.backgroundImage = "url('/marker-maps.svg')";
                 div.style.backgroundSize = 'contain';
@@ -63,9 +63,10 @@ const MapComponent: React.FC<{ drivers: Driver[] }> = ({ drivers }) => {
               })(),
             });
 
+            // Créer l'InfoWindow pour chaque conducteur
             const infoWindow = new google.maps.InfoWindow({
               content: `
-                <div>
+                <div style="color: black; font-size: 18px; line-height: 1.5; padding: 10px;">
                   <h3>${driver.nom} ${driver.prenom}</h3>
                   <p><strong>Téléphone:</strong> ${driver.telephone}</p>
                   <p><strong>Adresse:</strong> ${driver.adresse}</p>
@@ -75,7 +76,9 @@ const MapComponent: React.FC<{ drivers: Driver[] }> = ({ drivers }) => {
               `,
             });
 
+            // Utiliser google.maps.event.addListener pour l'événement de clic
             marker.addListener('click', () => {
+              // Ouvrir l'infoWindow au clic
               infoWindow.open(map, marker);
             });
           } catch {
@@ -92,3 +95,4 @@ const MapComponent: React.FC<{ drivers: Driver[] }> = ({ drivers }) => {
 };
 
 export default MapComponent;
+
