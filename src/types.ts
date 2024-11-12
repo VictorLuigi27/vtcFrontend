@@ -10,6 +10,7 @@ export interface Driver {
     disponibilite: boolean;
     latitude: number; 
     longitude: number; 
+    adresse: string;
   }
   
   export interface DriversResponse {

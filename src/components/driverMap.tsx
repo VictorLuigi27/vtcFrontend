@@ -8,6 +8,7 @@ interface Driver {
   latitude: number;
   longitude: number;
   disponibilite: boolean;
+  adresse: string;
 }
 
 const DriverMap: React.FC<{ drivers: Driver[] }> = ({ drivers }) => {

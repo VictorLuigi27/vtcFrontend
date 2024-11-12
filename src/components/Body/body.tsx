@@ -10,13 +10,14 @@ interface BodyProps {
 }
 
 const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
-  const [activeTab, setActiveTab] = useState<'drivers' | 'map' | 'add'>('drivers'); // Nouvel état pour suivre l'onglet actif
+  const [activeTab, setActiveTab] = useState<'drivers' | 'map' | 'add'>('drivers'); 
 
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
     email: '',
     telephone: '',
+    adresse: '',
     vehicule: '',
     disponibilite: false,
   });
@@ -52,7 +53,7 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
       console.log('Chauffeur ajouté:', addedDriver);
 
       setConfirmationMessage('Chauffeur ajouté avec succès !');
-      setFormData({ nom: '', prenom: '', email: '', telephone: '', vehicule: '', disponibilite: false });
+      setFormData({ nom: '', prenom: '', email: '', telephone: '', adresse: '', vehicule: '', disponibilite: false });
       setTimeout(() => setConfirmationMessage(null), 3000);
     } catch (error) {
       console.error('Erreur:', error);
@@ -163,6 +164,10 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
             <div>
               <label htmlFor="telephone" className="block text-lg font-medium text-gray-700">Téléphone</label>
               <input type="tel" id="telephone" name="telephone" value={formData.telephone} onChange={handleInputChange} className="w-full p-3 mt-2 border border-gray-300 rounded-lg" placeholder="Téléphone" />
+            </div>
+            <div>
+              <label htmlFor="adresse" className="block text-lg font-medium text-gray-700">Adresse</label>
+              <input type="text" id="adresse" name="adresse" value={formData.adresse} onChange={handleInputChange} className="w-full p-3 mt-2 border border-gray-300 rounded-lg" placeholder="Adresse" />
             </div>
             <div>
               <label htmlFor="vehicule" className="block text-lg font-medium text-gray-700">Véhicule</label>
