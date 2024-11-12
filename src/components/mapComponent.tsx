@@ -21,18 +21,18 @@ const MapComponent: React.FC<MapComponentProps> = ({ drivers }) => {
 
         drivers.forEach((driver) => {
           if (driver.latitude && driver.longitude) {
-            // Créer un élément HTML personnalisé pour le marqueur
+            
             const markerElement = document.createElement('div');
-            markerElement.style.width = '32px';
-            markerElement.style.height = '32px';
-            markerElement.style.backgroundImage = 'url(https://maps.google.com/mapfiles/ms/icons/blue-dot.png)';
+            markerElement.style.width = '60px';
+            markerElement.style.height = '60px';
+            markerElement.style.backgroundImage = 'url(https://www.svgrepo.com/svg/283135/maps-and-flags-pin)';
             markerElement.style.backgroundSize = 'cover';
             markerElement.style.borderRadius = '50%';
 
             const marker = new google.maps.marker.AdvancedMarkerElement({
               position: { lat: driver.latitude, lng: driver.longitude },
               map,
-              content: markerElement, // Utiliser l'élément HTML comme contenu
+              content: markerElement, 
             });
 
             const infoWindow = new google.maps.InfoWindow({

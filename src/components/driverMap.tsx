@@ -19,11 +19,12 @@ const DriverMap: React.FC<{ drivers: Driver[] }> = ({ drivers }) => {
         center: { lat: 48.8566, lng: 2.3522 },
         zoom: 12,
       });
+      console.log('Carte initialisée');
 
-      // Ajouter les marqueurs des chauffeurs
+      // Ajouter les marqueurs des chauffeurs avec AdvancedMarkerElement
       drivers.forEach(driver => {
         if (driver.disponibilite) {
-          new google.maps.Marker({
+          new google.maps.marker.AdvancedMarkerElement({
             position: { lat: driver.latitude, lng: driver.longitude },
             map: mapInstance,
             title: `${driver.nom} ${driver.prenom}`,
@@ -33,11 +34,10 @@ const DriverMap: React.FC<{ drivers: Driver[] }> = ({ drivers }) => {
     };
 
     loadGoogleMaps();
-  }, [drivers]); 
+  }, [drivers]);
 
   return <div id="map" style={{ height: '500px', width: '100%' }}></div>;
 };
 
 export default DriverMap;
-
 
