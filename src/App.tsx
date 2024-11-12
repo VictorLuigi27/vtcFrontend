@@ -5,6 +5,7 @@ import Body from './components/Body/body';
 import { useState, useEffect } from 'react';
 import { Driver,  DriversResponse} from './types';
 import LegalMentions from './components/mentions/mentions';
+import Formulaire from './components/driverForm/formulaire';
 
 function App() {
   const [drivers, setDrivers] = useState<Driver[]>([]);
@@ -33,6 +34,7 @@ function App() {
         <Routes>
         <Route path="/" element={<Body drivers={drivers} setDrivers={setDrivers} />} />
           <Route path="/mentionslegales" element={<LegalMentions />} />
+          <Route path="/formulaire" element={<Formulaire />} />
         </Routes>
 
         {/* Le Footer reste toujours visible */}
