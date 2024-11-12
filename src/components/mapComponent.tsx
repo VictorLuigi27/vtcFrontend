@@ -24,52 +24,58 @@ const MapComponent: React.FC<{ drivers: Driver[] }> = ({ drivers }) => {
         zoom: 12,
       });
 
-      drivers.forEach(driver => {
+      const geocodeAddress = async (adresse: string) => {
+        const geocoder = new google.maps.Geocoder();
+        return new Promise<google.maps.LatLng | null>((resolve, reject) => {
+          geocoder.geocode({ address: adresse }, (results, status) => {
+            if (status === google.maps.GeocoderStatus.OK && results && results[0]) {
+              const lat = results[0].geometry.location.lat();
+              const lng = results[0].geometry.location.lng();
+              resolve(new google.maps.LatLng(lat, lng)); // Utilisation des propriétés lat et lng
+            } else {
+              console.error(`Erreur de géocodage pour l'adresse : ${adresse} (Statut : ${status})`);
+              reject(`Erreur de géocodage pour ${adresse}`);
+            }
+          });
+        });
+      };
+
+      for (const driver of drivers) {
         if (driver.disponibilite) {
-          // Vérifier que la latitude et la longitude sont des nombres valides
-          const lat = driver.latitude;
-          const lng = driver.longitude;
-    
-          // Si la latitude ou la longitude sont invalides, ne pas créer le marqueur
-          if (isNaN(lat) || isNaN(lng)) {
-            console.error(`Coordonnées invalides pour le chauffeur ${driver.nom}: ${driver.latitude}, ${driver.longitude}`);
-            return;
+          try {
+            const position = await geocodeAddress(driver.adresse);
+            if (!position) return;
+
+            const marker = new google.maps.Marker({
+              position: position,
+              map: map,
+              icon: {
+                url: 'https://www.svgrepo.com/svg/283135/maps-and-flags-pin',
+                size: new google.maps.Size(60, 60),
+                scaledSize: new google.maps.Size(60, 60),
+              },
+            });
+
+            const infoWindow = new google.maps.InfoWindow({
+              content: `
+                <div>
+                  <h3>${driver.nom} ${driver.prenom}</h3>
+                  <p><strong>Téléphone:</strong> ${driver.telephone}</p>
+                  <p><strong>Adresse:</strong> ${driver.adresse}</p>
+                  <p><strong>Véhicule:</strong> ${driver.vehicule}</p>
+                  <p><strong>Disponibilité:</strong> ${driver.disponibilite ? 'Disponible' : 'Indisponible'}</p>
+                </div>
+              `,
+            });
+
+            marker.addListener('click', () => {
+              infoWindow.open(map, marker);
+            });
+          } catch {
+            console.error(`Impossible de géocoder l'adresse pour le chauffeur ${driver.nom}: ${driver.adresse}`);
           }
-    
-          const position = new google.maps.LatLng(lat, lng); // Créer un LatLng valide
-
-          // Crée un nouvel AdvancedMarkerElement pour chaque chauffeur
-          const markerElement = document.createElement('div');
-          markerElement.style.width = '60px';
-          markerElement.style.height = '60px';
-          markerElement.style.backgroundImage = 'url(https://www.svgrepo.com/svg/283135/maps-and-flags-pin)';
-          markerElement.style.backgroundSize = 'cover';
-          markerElement.style.borderRadius = '50%';
-
-          const marker = new google.maps.marker.AdvancedMarkerElement({
-            position: position,  // Utilise un objet LatLng valide
-            map,
-            content: markerElement,
-          });
-
-          // Fenêtre d'information
-          const infoWindow = new google.maps.InfoWindow({
-            content: `
-              <div>
-                <h3>${driver.nom} ${driver.prenom}</h3>
-                <p><strong>Téléphone:</strong> ${driver.telephone}</p>
-                <p><strong>Adresse:</strong> ${driver.adresse}</p>
-                <p><strong>Véhicule:</strong> ${driver.vehicule}</p>
-                <p><strong>Disponibilité:</strong> ${driver.disponibilite ? 'Disponible' : 'Indisponible'}</p>
-              </div>
-            `,
-          });
-
-          marker.addListener('click', () => {
-            infoWindow.open(map, marker);
-          });
         }
-      });
+      }
     };
 
     loadGoogleMaps(); // Initialiser la carte et les marqueurs
@@ -79,4 +85,3 @@ const MapComponent: React.FC<{ drivers: Driver[] }> = ({ drivers }) => {
 };
 
 export default MapComponent;
-
