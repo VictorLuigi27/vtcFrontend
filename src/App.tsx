@@ -11,7 +11,7 @@ function App() {
   const [drivers, setDrivers] = useState<Driver[]>([]);
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/driver')
+    fetch('http://localhost:3000/api/driver?limit=0')
       .then(response => {
         if (!response.ok) {
           throw new Error('Erreur de récupération des chauffeurs');
@@ -21,9 +21,12 @@ function App() {
       .then((data: DriversResponse) => {
         console.log('Chauffeurs récupérés:', data);
         setDrivers(data.drivers);
+        
       })
       .catch(error => console.error('Erreur:', error));
   }, []);
+
+  console.log("Nombre de chauffeurs dans Body:", drivers.length);
 
   return (
     <Router>

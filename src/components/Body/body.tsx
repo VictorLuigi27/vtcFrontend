@@ -14,6 +14,16 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
   const [openModal, setOpenModal] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const driversPerPage = 10;
+
+  const totalPages = Math.ceil(drivers.length / driversPerPage);
+  const currentDrivers = drivers.slice(
+    (currentPage - 1) * driversPerPage, 
+    currentPage * driversPerPage
+  );
+
   const handleDelete = (driverId: string) => {
     fetch(`http://localhost:3000/api/driver/${driverId}`, { method: 'DELETE' })
       .then(response => response.json())
@@ -32,11 +42,18 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
     setOpenModal(true);
   };
 
+  const goToNextPage = () => {
+    setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
+  };
+
+  const goToPreviousPage = () => {
+    setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
+  };
+
   return (
     <div className="flex flex-col items-center mt-10 px-4 md:px-8">
       <h1 className="text-black text-2xl sm:text-3xl font-bold mb-6">Gestion des Chauffeurs</h1>
 
-      {/* Barre de navigation secondaire */}
       <div className="flex space-x-4 mb-6">
         <button onClick={() => setActiveTab('drivers')} className={`p-2 rounded ${activeTab === 'drivers' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-black'}`}>
           Chauffeurs Disponibles
@@ -46,15 +63,14 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
         </button>
       </div>
 
-      {/* Section Chauffeurs Disponibles */}
       {activeTab === 'drivers' && (
         <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-lg mb-6">
           <ul>
-            {drivers.length === 0 ? (
+            {currentDrivers.length === 0 ? (
               <p className="text-gray-600">Chargement des chauffeurs...</p>
             ) : (
-              drivers
-                .sort((a, b) => (b.disponibilite ? 1 : 0) - (a.disponibilite ? 1 : 0)) // Tri par disponibilité
+              currentDrivers
+                .sort((a, b) => (b.disponibilite ? 1 : 0) - (a.disponibilite ? 1 : 0))
                 .map((driver) => (
                   <li key={driver._id} className="flex flex-col sm:flex-row justify-between items-center mb-4 p-4 border-b border-gray-300 rounded-lg hover:bg-gray-100 transition-all">
                     <div className="flex flex-col sm:flex-row sm:items-center">
@@ -79,10 +95,19 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
                 ))
             )}
           </ul>
+
+          <div className="flex justify-between mt-4">
+            <button onClick={goToPreviousPage} disabled={currentPage === 1} className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50">
+              Précédent
+            </button>
+            <span>Page {currentPage} sur {totalPages}</span>
+            <button onClick={goToNextPage} disabled={currentPage === totalPages} className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50">
+              Suivant
+            </button>
+          </div>
         </div>
       )}
 
-      {/* Section Carte */}
       {activeTab === 'map' && (
         <div className="mt-6 w-full h-[600px] bg-blue-800 p-6 rounded-lg shadow-lg text-white mb-5">
           <div className="flex items-center mb-4">
