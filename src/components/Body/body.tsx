@@ -13,20 +13,24 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
   const [activeTab, setActiveTab] = useState<'drivers' | 'map'>('drivers');
   const [openModal, setOpenModal] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
+  const [filter, setFilter] = useState<'all' | 'available' | 'unavailable'>('all'); // Filtre de disponibilité
 
-  // Filtrage des chauffeurs disponibles et indisponibles
-  const availableDrivers = drivers.filter(driver => driver.disponibilite);
-  const unavailableDrivers = drivers.filter(driver => !driver.disponibilite);
-
-  // Fusion des deux groupes, avec les disponibles en premier
-  const sortedDrivers = [...availableDrivers, ...unavailableDrivers];
+  // Filtrage des chauffeurs en fonction de la disponibilité
+  const filteredDrivers = drivers.filter(driver => {
+    if (filter === 'available') {
+      return driver.disponibilite;
+    } else if (filter === 'unavailable') {
+      return !driver.disponibilite;
+    }
+    return true; // Retourner tous les chauffeurs si aucun filtre n'est appliqué
+  });
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const driversPerPage = 10;
 
-  const totalPages = Math.ceil(sortedDrivers.length / driversPerPage);
-  const currentDrivers = sortedDrivers.slice(
+  const totalPages = Math.ceil(filteredDrivers.length / driversPerPage);
+  const currentDrivers = filteredDrivers.slice(
     (currentPage - 1) * driversPerPage, 
     currentPage * driversPerPage
   );
@@ -72,9 +76,25 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
 
       {activeTab === 'drivers' && (
         <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-lg mb-6">
+          {/* Filtre déroulant */}
+          <div className="mb-4">
+            <label htmlFor="filter" className="mr-2">Filtrer par disponibilité:</label>
+            <select 
+              id="filter" 
+              value={filter} 
+              onChange={(e) => setFilter(e.target.value as 'all' | 'available' | 'unavailable')} 
+              className="p-2 border border-gray-300 rounded"
+            >
+              <option value="all">Tous</option>
+              <option value="available">Disponibles</option>
+              <option value="unavailable">Indisponibles</option>
+            </select>
+          </div>
+
+          {/* Liste des chauffeurs */}
           <ul>
             {currentDrivers.length === 0 ? (
-              <p className="text-gray-600">Chargement des chauffeurs...</p>
+              <p className="text-gray-600">Aucun chauffeur à afficher...</p>
             ) : (
               currentDrivers.map((driver) => (
                 <li key={driver._id} className="flex flex-col sm:flex-row justify-between items-center mb-4 p-4 border-b border-gray-300 rounded-lg hover:bg-gray-100 transition-all">
@@ -101,6 +121,7 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
             )}
           </ul>
 
+          {/* Pagination */}
           <div className="flex justify-between mt-4">
             <button onClick={goToPreviousPage} disabled={currentPage === 1} className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50">
               Précédent
