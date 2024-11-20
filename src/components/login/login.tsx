@@ -21,7 +21,6 @@ export default function Login() {
     }
 
     try {
-        // Simuler une requête à l'API
         const response = await fetch("http://localhost:3000/api/login", {
           method: "POST",
           headers: {
@@ -33,23 +32,28 @@ export default function Login() {
         const data = await response.json();
       
         if (response.ok) {
-          // Stocker le token dans le localStorage
-          localStorage.setItem("token", data.token);
-          alert("Connexion réussie !");
-          window.location.href = "/"; // Rediriger vers la page d'accueil
-        } else {
-          // Gestion des erreurs
-          setError(data.message || "Erreur lors de la connexion.");
-        }
+            const { token, driver } = data;
+          
+            // Vérification dans la console pour voir ce qui est stocké
+            console.log("Token:", token); // Vérifie que le token est bien récupéré
+            console.log("Chauffeur:", driver); // Vérifie que l'objet chauffeur est bien récupéré
+          
+            // Enregistrer le token et chauffeur dans le localStorage
+            localStorage.setItem("token", token);
+            if (driver) {
+              localStorage.setItem("chauffeur", JSON.stringify(driver));
+            }
+          
+            alert("Connexion réussie !");
+            window.location.href = "/";  // Rediriger vers la page d'accueil
+          }          
       } catch (err: unknown) {
-        // Vérification si l'erreur est une instance d'Error
         if (err instanceof Error) {
           setError(err.message || "Une erreur est survenue. Veuillez réessayer plus tard.");
         } else {
           setError("Une erreur inconnue est survenue.");
         }
       }
-      
   };
 
   return (

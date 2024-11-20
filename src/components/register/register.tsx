@@ -91,6 +91,17 @@ export default function Register() {
           setError(data.message || "Erreur lors de l'inscription.");
           console.log("Erreur du backend:", data.message);
         } else {
+            
+            localStorage.setItem("chauffeur", JSON.stringify({
+                nom,
+                prenom,
+                email,
+                telephone,
+                adresse,
+                vehicule,
+                disponibilite,
+              }));
+
           alert(`Chauffeur inscrit avec succès !`);
           navigate("/login");
         }

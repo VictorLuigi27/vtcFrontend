@@ -8,6 +8,7 @@ import LegalMentions from './components/mentions/mentions';
 import Formulaire from './components/driverForm/formulaire';
 import Login from './components/login/login';
 import Register from './components/register/register';
+import EspacePro from './components/espacePro/espacePro';
 
 function App() {
   const [drivers, setDrivers] = useState<Driver[]>([]);
@@ -42,6 +43,7 @@ function App() {
           <Route path="/formulaire" element={<Formulaire />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/espace-pro" element={<EspacePro />} />
         </Routes>
 
         {/* Le Footer reste toujours visible */}

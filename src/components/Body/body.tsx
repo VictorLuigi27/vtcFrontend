@@ -15,6 +15,15 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
   const [filter, setFilter] = useState<'all' | 'available' | 'unavailable'>('all'); // Filtre de disponibilité
 
+
+  // Fonction pour se déconnecter
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("chauffeur");
+    window.location.href = "/login"; // Rediriger vers la page de connexion après la déconnexion
+  };
+
+
   // Filtrage des chauffeurs en fonction de la disponibilité
   const filteredDrivers = drivers.filter(driver => {
     if (filter === 'available') {
@@ -131,6 +140,13 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
               Suivant
             </button>
           </div>
+           {/* Bouton de déconnexion */}
+           <div
+              onClick={handleLogout}
+              className="bg-red-600 text-white text-lg shadow-lg rounded-lg p-2 cursor-pointer mt-4"
+            >
+              <p>Déconnexion</p>
+            </div>
         </div>
       )}
 
