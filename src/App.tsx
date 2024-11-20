@@ -43,7 +43,7 @@ function App() {
           <Route path="/formulaire" element={<Formulaire />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/espace-pro" element={<EspacePro />} />
+          <Route path="/espace-pro/:id" element={<EspacePro />} />
         </Routes>
 
         {/* Le Footer reste toujours visible */}

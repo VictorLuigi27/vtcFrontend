@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import MapComponent from '../mapComponent';
 
-// Définir une interface pour le chauffeur
 interface Chauffeur {
   _id: string;
   nom: string;
@@ -17,27 +16,26 @@ interface Chauffeur {
 
 const EspacePro = () => {
   const token = localStorage.getItem("token");
-
+  
   // State pour stocker les informations du chauffeur connecté
-  const [chauffeurInfo, setChauffeurInfo] = useState<Chauffeur | null>(null); // Typage explicite
-
+  const [chauffeurInfo, setChauffeurInfo] = useState<Chauffeur | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Vérification si l'utilisateur est connecté via le token
   const isChauffeurConnected = token !== null;
 
   useEffect(() => {
-    if (isChauffeurConnected) {
+    if (isChauffeurConnected && token) {
       const fetchChauffeurInfo = async () => {
-        // Récupérer le token depuis le localStorage
-        const token = localStorage.getItem('token');
-        
+        console.log('Token:', token);
+  
         if (!token) {
           console.log('Token manquant');
           return;
         }
-        
+
         try {
+          // Effectuer la requête en utilisant l'ID dans le token
           const response = await fetch('http://localhost:3000/api/driver/me', {
             method: 'GET',
             headers: {
@@ -45,20 +43,21 @@ const EspacePro = () => {
               'Content-Type': 'application/json',
             },
           });
-        
+          
           if (!response.ok) {
             setError('Erreur de récupération des informations du chauffeur');
             return;
           }
-        
+  
           const data = await response.json();
-          setChauffeurInfo(data); // Stocker les données du chauffeur dans le state
+          console.log('Données du chauffeur:', data);
+          setChauffeurInfo(data);
         } catch (error) {
           console.error('Erreur:', error);
           setError('Erreur interne lors de la récupération des informations');
         }
       };
-      
+  
       fetchChauffeurInfo();
     }
   }, [token, isChauffeurConnected]);
