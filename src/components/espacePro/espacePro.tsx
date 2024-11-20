@@ -62,6 +62,33 @@ const EspacePro = () => {
     }
   }, [token, isChauffeurConnected]);
 
+  // Fonction pour mettre à jour la disponibilité du chauffeur
+  const handleDisponibiliteChange = async (newDisponibilite: boolean) => {
+    if (!chauffeurInfo) return;
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/driver/${chauffeurInfo._id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ disponibilite: newDisponibilite }),
+      });
+
+      if (!response.ok) {
+        setError('Erreur lors de la mise à jour de la disponibilité');
+        return;
+      }
+
+      // Mettre à jour la disponibilité dans l'état local
+      const updatedChauffeur = await response.json();
+      setChauffeurInfo(updatedChauffeur);
+    } catch (error) {
+      console.error('Erreur:', error);
+      setError('Erreur interne lors de la mise à jour');
+    }
+  };
+
   // Fonction de déconnexion
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -85,6 +112,17 @@ const EspacePro = () => {
                   <p><strong>Téléphone:</strong> {chauffeurInfo.telephone}</p>
                   <p><strong>Véhicule:</strong> {chauffeurInfo.vehicule}</p>
                   <p><strong>Disponibilité:</strong> {chauffeurInfo.disponibilite ? 'Disponible' : 'Indisponible'}</p>
+                </div>
+
+                {/* Option pour changer la disponibilité */}
+                <div className="flex items-center">
+                  <label className="text-lg mr-4">Disponibilité:</label>
+                  <input 
+                    type="checkbox"
+                    checked={chauffeurInfo.disponibilite}
+                    onChange={(e) => handleDisponibiliteChange(e.target.checked)}
+                    className="h-5 w-5"
+                  />
                 </div>
               </div>
             ) : (
