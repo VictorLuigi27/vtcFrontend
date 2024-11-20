@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import MapComponent from '../mapComponent';
 
 // Définir une interface pour le chauffeur
 interface Chauffeur {
@@ -8,6 +9,8 @@ interface Chauffeur {
   email: string;
   telephone: string;
   adresse: string;
+  latitude: number;
+  longitude: number;
   vehicule: string;
   disponibilite: boolean;
 }
@@ -90,6 +93,11 @@ const EspacePro = () => {
                 Chargement des informations...
               </div>
             )}
+
+            {/* Affichage de la carte si le chauffeur est disponible */}
+            <div className="h-full w-full rounded-lg overflow-hidden mt-4">
+              {chauffeurInfo && <MapComponent drivers={[chauffeurInfo]} />}
+            </div>
 
             {/* Bouton de déconnexion */}
             <div
