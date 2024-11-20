@@ -67,7 +67,7 @@ const Body: React.FC<BodyProps> = ({ drivers, setDrivers }) => {
 
       <div className="flex space-x-4 mb-6">
         <button onClick={() => setActiveTab('drivers')} className={`p-2 rounded ${activeTab === 'drivers' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-black'}`}>
-          Chauffeurs Disponibles et Indisponibles
+          Chauffeurs
         </button>
         <button onClick={() => setActiveTab('map')} className={`p-2 rounded ${activeTab === 'map' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-black'}`}>
           Carte

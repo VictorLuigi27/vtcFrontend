@@ -14,9 +14,11 @@ export default function ModalMenu({openModal, setOpenModal}: ModalMenuProps) {
     onClick={() => setOpenModal(false)}>
         
         {/* Bouton de connexion */}
+        <Link to="/login">
         <div className="bg-black text-white text-lg shadow-lg rounded-lg p-2">
             <p>Connexion</p>
         </div>
+        </Link>
 
         {/* Bouton de l'espace profesionnel */}
         <div className="bg-black text-white text-lg shadow-lg rounded-lg p-2">
