@@ -31,6 +31,8 @@ const EspacePro = () => {
   
         if (!token) {
           console.log('Token manquant');
+          localStorage.removeItem("token");
+          window.location.href = "/login";
           return;
         }
 

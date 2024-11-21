@@ -28,7 +28,7 @@ export default function ModalMenu({ openModal, setOpenModal }: ModalMenuProps) {
       )}
 
       {/* Bouton de l'espace professionnel */}
-      <Link to="/espace-pro/${id}">
+      <Link to="/espace-pro/:id">
         <div className="bg-black text-white text-lg shadow-lg rounded-lg p-2">
           <p>Espace Pro</p>
         </div>
