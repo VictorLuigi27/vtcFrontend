@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import MapComponent from '../mapComponent';
+import { useLocation } from "react-router-dom";
 
 interface Chauffeur {
   _id: string;
@@ -16,7 +17,12 @@ interface Chauffeur {
 
 const EspacePro = () => {
   const token = localStorage.getItem("token");
+  const location = useLocation(); // Cela nous donne l'objet location qui contient l'URL actuelle
+  const params = new URLSearchParams(location.search); 
   
+  const id = params.get('id');
+
+  console.log('ID récupéré de l\'URL:', id);
   // State pour stocker les informations du chauffeur connecté
   const [chauffeurInfo, setChauffeurInfo] = useState<Chauffeur | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -28,6 +34,8 @@ const EspacePro = () => {
     if (isChauffeurConnected && token) {
       const fetchChauffeurInfo = async () => {
         console.log('Token:', token);
+        
+
   
         if (!token) {
           console.log('Token manquant');
@@ -102,7 +110,7 @@ const EspacePro = () => {
       {isChauffeurConnected ? (
         <>
           <div className="bg-gray-800 text-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-3xl font-semibold text-center mb-4">Bienvenue dans votre espace professionnel</h2>
+            <h2 className="text-3xl font-semibold text-center mb-4">Bienvenue dans votre espace professionnel: {id}</h2>
             {/* Affichage des informations du chauffeur connecté */}
             {chauffeurInfo ? (
               <div className="space-y-4">
