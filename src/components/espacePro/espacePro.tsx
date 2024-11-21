@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import MapComponent from '../mapComponent';
 import { useLocation } from "react-router-dom";
+import ModalCourse from "../modal/modalCourse";
 
 interface Chauffeur {
   _id: string;
@@ -17,11 +18,9 @@ interface Chauffeur {
 
 const EspacePro = () => {
   const token = localStorage.getItem("token");
-  const location = useLocation(); 
+  const location = useLocation();
   const params = new URLSearchParams(location.search);
   const id = params.get('id');
-
-  console.log('ID récupéré de l\'URL:', id);
 
   const [chauffeurInfo, setChauffeurInfo] = useState<Chauffeur | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -29,6 +28,7 @@ const EspacePro = () => {
 
   const isChauffeurConnected = token !== null;
 
+  // Récupérer les informations du chauffeur si connecté
   useEffect(() => {
     if (isChauffeurConnected && token) {
       const fetchChauffeurInfo = async () => {
@@ -161,49 +161,9 @@ const EspacePro = () => {
 
       {error && <p className="text-red-600 text-center text-xl">{error}</p>}
 
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-2xl font-semibold mb-4">Ajouter une course</h2>
-            <form>
-              <div className="mb-4">
-                <label htmlFor="destination" className="block text-sm font-medium text-gray-700">Destination</label>
-                <input
-                  type="text"
-                  id="destination"
-                  className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="montant" className="block text-sm font-medium text-gray-700">Montant</label>
-                <input
-                  type="number"
-                  id="montant"
-                  className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                Ajouter la course
-              </button>
-            </form>
-            <button
-              onClick={toggleModal}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-            >
-              <span className="text-2xl">&times;</span> {/* Icône "fermer" */}
-            </button>
-          </div>
-        </div>
-      )}
+      {isModalOpen && <ModalCourse onClose={toggleModal} chauffeurId={chauffeurInfo?._id || ""} />}
     </div>
   );
 };
 
 export default EspacePro;
-

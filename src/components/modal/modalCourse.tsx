@@ -1,18 +1,55 @@
 import React, { useState } from "react";
 
-export default function ModalCourse() {
-  // États locaux pour les champs du formulaire
+// Ajoute un type pour les props, incluant chauffeurId
+interface ModalCourseProps {
+  onClose: () => void;
+  chauffeurId: string; // Propriété chauffeurId
+}
+
+export default function ModalCourse({ onClose, chauffeurId }: ModalCourseProps) {
   const [destination, setDestination] = useState("");
   const [montant, setMontant] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  // Fonction pour gérer la soumission du formulaire
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Ajoute ici la logique pour soumettre les données
-    console.log("Course ajoutée:", { destination, montant });
-    // Réinitialise les champs après la soumission
-    setDestination("");
-    setMontant("");
+    setError("");
+    setSuccess("");
+
+    if (!destination || !montant) {
+      setError("Tous les champs doivent être remplis.");
+      return;
+    }
+
+    const courseData = {
+      destination,
+      montant: parseFloat(montant),
+      chauffeurId,
+    };
+
+    try {
+      const response = await fetch("http://localhost:3000/api/driver/course", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(courseData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de l'ajout de la course.");
+      }
+
+      const newCourse = await response.json();
+      setSuccess("Course ajoutée avec succès !");
+      console.log("Course ajoutée:", newCourse);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Une erreur inconnue est survenue.");
+      }
+      console.error("Erreur:", error);
+    }
   };
 
   return (
@@ -27,10 +64,10 @@ export default function ModalCourse() {
               id="destination"
               value={destination}
               onChange={(e) => setDestination(e.target.value)}
-              className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+              className="w-full p-2 border border-gray-300 rounded-md"
             />
           </div>
+
           <div className="mb-4">
             <label htmlFor="montant" className="block text-sm font-medium text-gray-700">Montant</label>
             <input
@@ -38,18 +75,20 @@ export default function ModalCourse() {
               id="montant"
               value={montant}
               onChange={(e) => setMontant(e.target.value)}
-              className="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+              className="w-full p-2 border border-gray-300 rounded-md"
             />
           </div>
-          <button
-            type="submit"
-            className="w-full py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Ajouter la course
-          </button>
+
+          {error && <p className="text-red-600 text-sm">{error}</p>}
+          {success && <p className="text-green-600 text-sm">{success}</p>}
+
+          <div className="flex justify-between mt-4">
+            <button type="button" onClick={onClose} className="bg-gray-500 text-white px-4 py-2 rounded-md">Annuler</button>
+            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">Ajouter</button>
+          </div>
         </form>
       </div>
     </div>
   );
 }
+
